@@ -18,15 +18,49 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
-
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
+
+app.get('/api', (req, res) => {
+  return res.json({
+      unix: new Date().getTime(),
+      utc: new Date().toUTCString()
+  })
+})
+
+
+app.get('/api/:dateValue?', (req, res) => {
+  const dateString = req.params.dateValue
+  const dateStringRegex = /^[0-9]+$/
+  const onlyNumbers = dateStringRegex.test(dateString)
+ 
+  if (!onlyNumbers) {
+    const unixTimestamp = Date.parse(dateString)
+    const utcDate = new Date(unixTimestamp).toUTCString()
+ 
+    unixTimestamp
+    ? res.json({ unix: unixTimestamp, utc: utcDate })
+    : res.json({ error: "Invalid Date" })
+  } 
+  else {
+    const unixTimestamp = parseInt(dateString)
+    const actualDate = new Date(unixTimestamp)
+    const utcDate = actualDate.toUTCString()
+ 
+    res.json({ unix: unixTimestamp, utc: utcDate })
+  }
+ 
+   app.get('/api', (req, res) => {
+     const currentDate = new Date().toUTCString()
+     const currentUnix = Date.parse(currentDate)
+     res.json({ unix: currentUnix, utc: currentDate })
+   })
+ })
+ 
